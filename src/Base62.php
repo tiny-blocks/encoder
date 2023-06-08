@@ -2,11 +2,13 @@
 
 namespace TinyBlocks\Encoder;
 
+use TinyBlocks\Encoder\Internal\Exceptions\InvalidBase62Encoding;
+
 final class Base62
 {
     private const BASE62_RADIX = 62;
     private const BASE62_ALPHABET = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
-    private const HEXADECIMAL_RADIX = 16;
+    private const BASE62_HEXADECIMAL_RADIX = 16;
 
     public static function encode(string $value): string
     {
@@ -21,16 +23,20 @@ final class Base62
         $base62 = str_repeat(self::BASE62_ALPHABET[0], $bytes);
 
         if (empty($hexadecimal)) {
-            return strtr($base62, self::BASE62_ALPHABET, self::BASE62_ALPHABET);
+            return $base62;
         }
 
-        $base62Conversion = gmp_strval(gmp_init($hexadecimal, self::HEXADECIMAL_RADIX), self::BASE62_RADIX);
+        $number = gmp_init($hexadecimal, self::BASE62_HEXADECIMAL_RADIX);
 
-        return strtr($base62 . $base62Conversion, self::BASE62_ALPHABET, self::BASE62_ALPHABET);
+        return $base62 . gmp_strval($number, self::BASE62_RADIX);
     }
 
     public static function decode(string $value): string
     {
+        if (strlen($value) !== strspn($value, self::BASE62_ALPHABET)) {
+            throw new InvalidBase62Encoding(value: $value);
+        }
+
         $bytes = 0;
 
         while (!empty($value) && str_starts_with($value, self::BASE62_ALPHABET[0])) {
@@ -42,9 +48,10 @@ final class Base62
             return str_repeat("\x00", $bytes);
         }
 
-        $hexadecimal = gmp_strval(gmp_init($value, self::BASE62_RADIX), self::HEXADECIMAL_RADIX);
+        $number = gmp_init($value, self::BASE62_RADIX);
+        $hexadecimal = gmp_strval($number, self::BASE62_HEXADECIMAL_RADIX);
 
-        if (strlen($hexadecimal) % 2 !== 0) {
+        if (strlen($hexadecimal) % 2) {
             $hexadecimal = '0' . $hexadecimal;
         }
 
