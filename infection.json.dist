@@ -13,7 +13,11 @@
     },
     "mutators": {
         "@default": true,
-        "FalseValue": false
+        "Concat": false,
+        "FalseValue": false,
+        "IncrementInteger": false,
+        "DecrementInteger": false,
+        "ConcatOperandRemoval": false
     },
     "phpUnit": {
         "configDir": "",
