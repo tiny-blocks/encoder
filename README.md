@@ -31,18 +31,16 @@ The library exposes concrete implementations for encoding and decoding data.
 ### Using Base62
 
 ```php
-$encoded = Base62::encode(value: 'Hello world!')
+$encoded = Base62::encode(value: 'Hello world!') # T8dgcjRGuYUueWht
 
-echo $encoded; # T8dgcjRGuYUueWht
-
-$decoded = Base62::decode(value: $encoded)
-
-echo $encoded; # Hello world!
+Base62::decode(value: $encoded) # Hello world!
 ```
+
+<div id='license'></div> 
 
 ## License
 
-Math is licensed under [MIT](/LICENSE).
+Encoder is licensed under [MIT](LICENSE).
 
 <div id='contributing'></div>
 
