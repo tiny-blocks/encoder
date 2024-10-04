@@ -26,14 +26,39 @@ composer require tiny-blocks/encoder
 
 ## How to use
 
-The library exposes concrete implementations for encoding and decoding data.
+The library provides concrete implementations of the `Encoder` interface, enabling encoding and decoding of data into
+specific formats like Base62.
 
 ### Using Base62
 
-```php
-$encoded = Base62::encode(value: 'Hello world!') # T8dgcjRGuYUueWht
+To encode a value into Base62 format:
 
-Base62::decode(value: $encoded) # Hello world!
+```php
+$encoder = Base62::from(value: 'Hello world!');
+$encoded = $encoder->encode();
+
+# Output: T8dgcjRGuYUueWht
+```
+
+To decode a Base62-encoded value back to its original form:
+
+```php
+$encoder = Base62::from(value: 'T8dgcjRGuYUueWht');
+$decoded = $encoder->decode();
+
+# Output: Hello world!
+```
+
+If you attempt to decode an invalid Base62 value, an `InvalidDecoding` exception will be thrown:
+
+```php
+try {
+    $encoder = Base62::from(value: 'invalid_value');
+    $decoded = $encoder->decode();
+} catch (InvalidDecoding $exception) {
+    echo $exception->getMessage();
+    # Output: The value <invalid_value> could not be decoded.
+}
 ```
 
 <div id='license'></div> 
