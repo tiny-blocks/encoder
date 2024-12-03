@@ -4,15 +4,16 @@ declare(strict_types=1);
 
 namespace TinyBlocks\Encoder;
 
+use TinyBlocks\Encoder\Internal\Decimal;
 use TinyBlocks\Encoder\Internal\Exceptions\InvalidDecoding;
 use TinyBlocks\Encoder\Internal\Hexadecimal;
 
 final readonly class Base62 implements Encoder
 {
-    private const BASE62_RADIX = 62;
-    private const BASE62_ALPHABET = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
-    private const BASE62_CHARACTER_LENGTH = 1;
-    private const BASE62_HEXADECIMAL_RADIX = 16;
+    public const int BASE62_RADIX = 62;
+    private const int BASE62_CHARACTER_LENGTH = 1;
+
+    private const string BASE62_ALPHABET = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
 
     private function __construct(private string $value)
     {
@@ -25,18 +26,18 @@ final readonly class Base62 implements Encoder
 
     public function encode(): string
     {
-        $hexadecimal = Hexadecimal::fromBinary(binary: $this->value);
-        $bytes = $hexadecimal->removeLeadingZeroBytes();
+        $hexadecimal = Hexadecimal::fromBinary(binary: $this->value, alphabet: self::BASE62_ALPHABET);
+        $hexadecimal = $hexadecimal->removeLeadingZeroBytes();
 
-        $base62 = str_repeat(self::BASE62_ALPHABET[0], $bytes);
+        $base62 = str_repeat(self::BASE62_ALPHABET[0], $hexadecimal->getBytes());
 
         if ($hexadecimal->isEmpty()) {
             return $base62;
         }
 
-        $number = $hexadecimal->toGmpInit(base: self::BASE62_HEXADECIMAL_RADIX);
+        $base62Value = $hexadecimal->toBase(base: self::BASE62_RADIX);
 
-        return sprintf('%s%s', $base62, gmp_strval($number, self::BASE62_RADIX));
+        return sprintf('%s%s', $base62, $base62Value);
     }
 
     public function decode(): string
@@ -57,16 +58,13 @@ final readonly class Base62 implements Encoder
             return str_repeat("\x00", $bytes);
         }
 
-        $number = gmp_init($value, self::BASE62_RADIX);
-        $hexadecimal = Hexadecimal::fromGmp(number: $number, base: self::BASE62_HEXADECIMAL_RADIX);
-        $hexadecimal->padLeft();
+        $decimal = Decimal::fromBase62(number: $value, alphabet: self::BASE62_ALPHABET);
+        $hexadecimal = Hexadecimal::from(value: $decimal->toHexadecimal())
+            ->fillWithZeroIfNecessary()
+            ->toString();
 
-        $binary = hex2bin(sprintf('%s%s', str_repeat('00', $bytes), $hexadecimal->toString()));
+        $binary = hex2bin($hexadecimal);
 
-        if (!is_string($binary)) {
-            throw new InvalidDecoding(value: $this->value);
-        }
-
-        return $binary;
+        return sprintf('%s%s', str_repeat("\x00", $bytes), $binary);
     }
 }

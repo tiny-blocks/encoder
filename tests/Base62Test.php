@@ -77,29 +77,32 @@ final class Base62Test extends TestCase
     public static function providerForTestEncode(): array
     {
         return [
-            'hello world' => ['value' => 'Hello world!', 'expected' => 'T8dgcjRGuYUueWht'],
-            'empty string' => ['value' => '', 'expected' => ''],
-            'numeric string' => ['value' => '1234567890', 'expected' => '1A0afZkibIAR2O'],
-            'special characters' => ['value' => '@#$%^&*()', 'expected' => 'MjehbVgJedVR']
+            'Hello world'        => ['value' => 'Hello world!', 'expected' => 'T8dgcjRGuYUueWht'],
+            'Empty string'       => ['value' => '', 'expected' => ''],
+            'Numeric string'     => ['value' => '1234567890', 'expected' => '1A0afZkibIAR2O'],
+            'Special characters' => ['value' => '@#$%^&*()', 'expected' => 'MjehbVgJedVR']
         ];
     }
 
     public static function providerForTestDecode(): array
     {
         return [
-            'empty string' => ['value' => '', 'expected' => ''],
-            'hello world' => ['value' => 'T8dgcjRGuYUueWht', 'expected' => 'Hello world!'],
-            'numeric string' => ['value' => '1A0afZkibIAR2O', 'expected' => '1234567890'],
-            'special characters' => ['value' => 'MjehbVgJedVR', 'expected' => '@#$%^&*()']
+            'Zero value'         => ['value' => '0', 'expected' => ''],
+            'Empty string'       => ['value' => '', 'expected' => ''],
+            'Hello world'        => ['value' => 'T8dgcjRGuYUueWht', 'expected' => 'Hello world!'],
+            'Leading zeros'      => ['value' => '000001', 'expected' => hex2bin('000000000001')],
+            'Numeric string'     => ['value' => '1A0afZkibIAR2O', 'expected' => '1234567890'],
+            'Single character'   => ['value' => '1', 'expected' => "\001"],
+            'Special characters' => ['value' => 'MjehbVgJedVR', 'expected' => '@#$%^&*()']
         ];
     }
 
     public static function providerForTestEncodeAndDecodeWithLeadingZeroBytes(): array
     {
         return [
-            'leading zero bytes 01' => ['value' => '001jlt60MnKnB9ECKRt4gl'],
-            'leading zero bytes 02' => ['value' => hex2bin('07d8e31da269bf28')],
-            'leading zero bytes 03' => ['value' => hex2bin('0000010203040506')]
+            'Leading zero bytes 01' => ['value' => '001jlt60MnKnB9ECKRt4gl'],
+            'Leading zero bytes 02' => ['value' => hex2bin('07d8e31da269bf28')],
+            'Leading zero bytes 03' => ['value' => hex2bin('0000010203040506')]
         ];
     }
 }
