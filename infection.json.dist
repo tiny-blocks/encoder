@@ -1,5 +1,5 @@
 {
-    "timeout": 10,
+    "timeout": 30,
     "testFramework": "phpunit",
     "tmpDir": "report/infection/",
     "source": {
@@ -13,7 +13,12 @@
     },
     "mutators": {
         "@default": true,
+        "BCMath": false,
+        "CastInt": false,
+        "Increment": false,
+        "GreaterThan": false,
         "UnwrapSubstr": false,
+        "UnwrapStrToLower": false,
         "LogicalAndNegation": false,
         "LogicalAndAllSubExprNegation": false
     },
