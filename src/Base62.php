@@ -10,9 +10,9 @@ use TinyBlocks\Encoder\Internal\Hexadecimal;
 
 final readonly class Base62 implements Encoder
 {
-    public const int BASE62_RADIX = 62;
     private const int BASE62_CHARACTER_LENGTH = 1;
 
+    public const string BASE62_RADIX = '62';
     private const string BASE62_ALPHABET = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
 
     private function __construct(private string $value)
@@ -58,7 +58,7 @@ final readonly class Base62 implements Encoder
             return str_repeat("\x00", $bytes);
         }
 
-        $decimal = Decimal::fromBase62(number: $value, alphabet: self::BASE62_ALPHABET);
+        $decimal = Decimal::from(number: $value, alphabet: self::BASE62_ALPHABET, baseRadix: self::BASE62_RADIX);
         $hexadecimal = Hexadecimal::from(value: $decimal->toHexadecimal())
             ->fillWithZeroIfNecessary()
             ->toString();
