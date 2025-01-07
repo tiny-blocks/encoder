@@ -59,24 +59,24 @@ final readonly class Hexadecimal
         return empty($this->value);
     }
 
-    public function toBase(int $base): string
+    public function toBase(string $base): string
     {
         $length = strlen($this->value);
         $decimalValue = '0';
 
         for ($index = 0; $index < $length; $index++) {
-            $digit = strpos(self::HEXADECIMAL_ALPHABET, strtolower($this->value[$index]));
+            $digit = (string)strpos(self::HEXADECIMAL_ALPHABET, $this->value[$index]);
             $decimalValue = bcmul($decimalValue, self::HEXADECIMAL_RADIX);
-            $decimalValue = bcadd($decimalValue, (string)$digit);
+            $decimalValue = bcadd($decimalValue, $digit);
         }
 
         $digits = $this->alphabet;
         $result = '';
 
         while (bccomp($decimalValue, '0') > 0) {
-            $remainder = bcmod($decimalValue, (string)$base);
-            $result = sprintf('%s%s', $digits[(int)$remainder], $result);
-            $decimalValue = bcdiv($decimalValue, (string)$base);
+            $remainder = (int)bcmod($decimalValue, $base);
+            $result = sprintf('%s%s', $digits[$remainder], $result);
+            $decimalValue = bcdiv($decimalValue, $base);
         }
 
         return $result ?: '0';
