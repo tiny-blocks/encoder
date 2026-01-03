@@ -31,15 +31,18 @@ final readonly class Hexadecimal
 
     public function removeLeadingZeroBytes(): Hexadecimal
     {
-        $bytes = 0;
-        $newValue = $this->value;
+        $value = $this->value;
 
-        while (str_starts_with($newValue, '00')) {
-            $bytes++;
-            $newValue = substr($newValue, self::HEXADECIMAL_BYTE_LENGTH);
+        $leadingZeroCharacters = strspn($value, '0');
+        $offset = $leadingZeroCharacters - ($leadingZeroCharacters % self::HEXADECIMAL_BYTE_LENGTH);
+
+        $bytes = intdiv($offset, self::HEXADECIMAL_BYTE_LENGTH);
+
+        if ($offset === strlen($value)) {
+            $value = '';
         }
 
-        return new Hexadecimal(value: $newValue, alphabet: $this->alphabet, bytes: $bytes);
+        return new Hexadecimal(value: $value, alphabet: $this->alphabet, bytes: $bytes);
     }
 
     public function fillWithZeroIfNecessary(): Hexadecimal
@@ -61,11 +64,10 @@ final readonly class Hexadecimal
 
     public function toBase(string $base): string
     {
-        $length = strlen($this->value);
         $decimalValue = '0';
 
-        for ($index = 0; $index < $length; $index++) {
-            $digit = (string)strpos(self::HEXADECIMAL_ALPHABET, $this->value[$index]);
+        foreach (str_split($this->value) as $character) {
+            $digit = (string)strpos(self::HEXADECIMAL_ALPHABET, $character);
             $decimalValue = bcmul($decimalValue, self::HEXADECIMAL_RADIX);
             $decimalValue = bcadd($decimalValue, $digit);
         }
@@ -73,8 +75,8 @@ final readonly class Hexadecimal
         $digits = $this->alphabet;
         $result = '';
 
-        while (bccomp($decimalValue, '0') > 0) {
-            $remainder = (int)bcmod($decimalValue, $base);
+        while ($decimalValue !== '0') {
+            $remainder = intval(bcmod($decimalValue, $base));
             $result = sprintf('%s%s', $digits[$remainder], $result);
             $decimalValue = bcdiv($decimalValue, $base);
         }

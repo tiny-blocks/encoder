@@ -10,8 +10,6 @@ use TinyBlocks\Encoder\Internal\Hexadecimal;
 
 final readonly class Base62 implements Encoder
 {
-    private const int BASE62_CHARACTER_LENGTH = 1;
-
     public const string BASE62_RADIX = '62';
     private const string BASE62_ALPHABET = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
 
@@ -46,19 +44,22 @@ final readonly class Base62 implements Encoder
             throw new InvalidDecoding(value: $this->value);
         }
 
-        $bytes = 0;
         $value = $this->value;
 
-        while (!empty($value) && str_starts_with($value, self::BASE62_ALPHABET[0])) {
-            $bytes++;
-            $value = substr($value, self::BASE62_CHARACTER_LENGTH);
+        if ($value === '') {
+            return '';
         }
 
-        if (empty($value)) {
-            return str_repeat("\x00", $bytes);
+        $leadingZeroCharacters = strspn($value, self::BASE62_ALPHABET[0]);
+
+        if ($leadingZeroCharacters === strlen($value)) {
+            return str_repeat("\x00", max(0, $leadingZeroCharacters - 1));
         }
 
-        $decimal = Decimal::from(number: $value, alphabet: self::BASE62_ALPHABET, baseRadix: self::BASE62_RADIX);
+        $bytes = $leadingZeroCharacters;
+        $number = ltrim($value, self::BASE62_ALPHABET[0]);
+
+        $decimal = Decimal::from(number: $number, alphabet: self::BASE62_ALPHABET, baseRadix: self::BASE62_RADIX);
         $hexadecimal = Hexadecimal::from(value: $decimal->toHexadecimal())
             ->fillWithZeroIfNecessary()
             ->toString();

@@ -17,13 +17,8 @@
     },
     "mutators": {
         "@default": true,
-        "BCMath": false,
-        "CastInt": false,
-        "Increment": false,
-        "GreaterThan": false,
-        "UnwrapSubstr": false,
-        "LogicalAndNegation": false,
-        "LogicalAndAllSubExprNegation": false
+        "UnwrapLtrim": false,
+        "DecrementInteger": false
     },
     "minCoveredMsi": 100,
     "testFramework": "phpunit"

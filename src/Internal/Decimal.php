@@ -13,10 +13,9 @@ final readonly class Decimal
     public static function from(string $number, string $alphabet, string $baseRadix): Decimal
     {
         $value = '0';
-        $length = strlen($number);
 
-        for ($index = 0; $index < $length; $index++) {
-            $digit = (string)strpos($alphabet, $number[$index]);
+        foreach (str_split($number) as $character) {
+            $digit = (string)strpos($alphabet, $character);
             $value = bcmul($value, $baseRadix);
             $value = bcadd($value, $digit);
         }
@@ -29,8 +28,8 @@ final readonly class Decimal
         $value = $this->value;
         $hexadecimalValue = '';
 
-        while (bccomp($value, '0') > 0) {
-            $remainder = (int)bcmod($value, Hexadecimal::HEXADECIMAL_RADIX);
+        while ($value !== '0') {
+            $remainder = intval(bcmod($value, Hexadecimal::HEXADECIMAL_RADIX));
             $hexadecimalValue = sprintf('%s%s', Hexadecimal::HEXADECIMAL_ALPHABET[$remainder], $hexadecimalValue);
             $value = bcdiv($value, Hexadecimal::HEXADECIMAL_RADIX);
         }

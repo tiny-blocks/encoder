@@ -88,6 +88,8 @@ final class Base62Test extends TestCase
     {
         return [
             'Zero value'         => ['value' => '0', 'expected' => ''],
+            'Single zero byte'   => ['value' => '00', 'expected' => "\x00"],
+            'Two zero bytes'     => ['value' => '000', 'expected' => "\x00\x00"],
             'Empty string'       => ['value' => '', 'expected' => ''],
             'Hello world'        => ['value' => 'T8dgcjRGuYUueWht', 'expected' => 'Hello world!'],
             'Leading zeros'      => ['value' => '000001', 'expected' => hex2bin('000000000001')],
