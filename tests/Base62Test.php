@@ -47,6 +47,22 @@ final class Base62Test extends TestCase
         Base62::from(value: $value)->decode();
     }
 
+    #[DataProvider('providerForTestEncodeAndDecodeWithAllZeroBytes')]
+    public function testEncodeAndDecodeWithAllZeroBytes(string $value): void
+    {
+        /** @Given a binary value containing only zero bytes */
+        $encoder = Base62::from(value: $value);
+
+        /** @When encoding the binary value */
+        $encoded = $encoder->encode();
+
+        /** @When decoding the encoded value */
+        $decoded = Base62::from(value: $encoded)->decode();
+
+        /** @Then the decoded value should match the original binary value */
+        self::assertEquals($value, $decoded);
+    }
+
     public function testWhenInvalidDecodingBase62WhenHex2BinFails(): void
     {
         $value = '\\A';
@@ -91,9 +107,20 @@ final class Base62Test extends TestCase
             'Empty string'       => ['value' => '', 'expected' => ''],
             'Hello world'        => ['value' => 'T8dgcjRGuYUueWht', 'expected' => 'Hello world!'],
             'Leading zeros'      => ['value' => '000001', 'expected' => hex2bin('000000000001')],
+            'Two zero bytes'     => ['value' => '000', 'expected' => "\x00\x00"],
             'Numeric string'     => ['value' => '1A0afZkibIAR2O', 'expected' => '1234567890'],
+            'Single zero byte'   => ['value' => '00', 'expected' => "\x00"],
             'Single character'   => ['value' => '1', 'expected' => "\001"],
             'Special characters' => ['value' => 'MjehbVgJedVR', 'expected' => '@#$%^&*()']
+        ];
+    }
+
+    public static function providerForTestEncodeAndDecodeWithAllZeroBytes(): array
+    {
+        return [
+            'Single zero byte' => ['value' => "\x00"],
+            'Two zero bytes'   => ['value' => "\x00\x00"],
+            'Eight zero bytes' => ['value' => str_repeat("\x00", 8)]
         ];
     }
 
