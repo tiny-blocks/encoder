@@ -27,16 +27,21 @@ final readonly class Base62 implements Encoder
         $hexadecimal = Hexadecimal::fromBinary(binary: $this->value, alphabet: self::BASE62_ALPHABET);
         $hexadecimal = $hexadecimal->removeLeadingZeroBytes();
 
-        $base62 = str_repeat(self::BASE62_ALPHABET[0], $hexadecimal->getBytes());
+        $prefix = str_repeat(self::BASE62_ALPHABET[0], $hexadecimal->getBytes());
 
         if ($hexadecimal->isEmpty()) {
-            return $base62;
+            if ($hexadecimal->getBytes() === 0) {
+                return '';
+            }
+
+            return sprintf('%s%s', $prefix, self::BASE62_ALPHABET[0]);
         }
 
         $base62Value = $hexadecimal->toBase(base: self::BASE62_RADIX);
 
-        return sprintf('%s%s', $base62, $base62Value);
+        return sprintf('%s%s', $prefix, $base62Value);
     }
+
 
     public function decode(): string
     {
