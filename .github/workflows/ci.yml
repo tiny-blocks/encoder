@@ -6,13 +6,13 @@ on:
 permissions:
   contents: read
 
+env:
+  PHP_VERSION: '8.5'
+
 jobs:
   auto-review:
-    name: Auto review (PHP ${{ matrix.php }})
+    name: Auto review (PHP ${{ env.PHP_VERSION }})
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        php: [ '8.3', '8.4', '8.5' ]
 
     steps:
       - name: Checkout
@@ -21,7 +21,7 @@ jobs:
       - name: Configure PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: ${{ matrix.php }}
+          php-version: ${{ env.PHP_VERSION }}
 
       - name: Cache Composer
         uses: actions/cache@v4
@@ -39,20 +39,17 @@ jobs:
         run: composer review
 
   tests:
-    name: Tests (PHP ${{ matrix.php }})
+    name: Tests (PHP ${{ env.PHP_VERSION }})
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        php: [ '8.3', '8.4', '8.5' ]
 
     steps:
       - name: Checkout
         uses: actions/checkout@v6
 
-      - name: Use PHP ${{ matrix.php }}
+      - name: Configure PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: ${{ matrix.php }}
+          php-version: ${{ env.PHP_VERSION }}
 
       - name: Cache Composer
         uses: actions/cache@v4
