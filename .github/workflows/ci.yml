@@ -61,6 +61,12 @@ jobs:
           name: vendor-artifact
           path: .
 
+      - name: Make vendor binaries executable
+        run: |
+          if [ -d vendor/bin ]; then
+            chmod +x vendor/bin/* || true
+          fi
+
       - name: Run review
         run: composer review
 
@@ -85,6 +91,12 @@ jobs:
         with:
           name: vendor-artifact
           path: .
+
+      - name: Make vendor binaries executable
+        run: |
+          if [ -d vendor/bin ]; then
+            chmod +x vendor/bin/* || true
+          fi
 
       - name: Run tests
         run: composer tests
