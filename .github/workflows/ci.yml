@@ -56,7 +56,7 @@ jobs:
           tools: composer:2
 
       - name: Download vendor artifact from build
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v6
         with:
           name: vendor-artifact
           path: .
@@ -81,7 +81,7 @@ jobs:
           tools: composer:2
 
       - name: Download vendor artifact from build
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v6
         with:
           name: vendor-artifact
           path: .
