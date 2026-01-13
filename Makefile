@@ -15,7 +15,7 @@ YELLOW := \033[0;33m
 .DEFAULT_GOAL := help
 
 .PHONY: configure
-configure: ## Install and optimize Composer dependencies
+configure: ## Configure development environment
 	@${DOCKER_RUN} composer update --optimize-autoloader
 
 .PHONY: test
@@ -31,15 +31,15 @@ test-no-coverage: ## Run all tests without coverage
 	@${DOCKER_RUN} composer tests-no-coverage
 
 .PHONY: review
-review: ## Run code review/static analysis
+review: ## Run static code analysis
 	@${DOCKER_RUN} composer review
 
 .PHONY: show-reports
-show-reports: ## Open coverage and mutation reports in browser
+show-reports: ## Open static analysis reports (e.g., coverage, lints) in the browser
 	@sensible-browser report/coverage/coverage-html/index.html report/coverage/mutation-report.html
 
 .PHONY: clean
-clean: ## Clean generated files and reset permissions
+clean: ## Remove dependencies and generated artifacts
 	@sudo chown -R ${USER}:${USER} ${PWD}
 	@rm -rf report vendor .phpunit.cache *.lock
 
