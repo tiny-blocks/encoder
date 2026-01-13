@@ -18,6 +18,7 @@
     "mutators": {
         "@default": true,
         "UnwrapLtrim": false,
+        "ReturnRemoval": false,
         "DecrementInteger": false
     },
     "minCoveredMsi": 100,
