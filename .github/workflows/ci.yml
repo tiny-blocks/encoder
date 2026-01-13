@@ -11,7 +11,7 @@ env:
 
 jobs:
   auto-review:
-    name: Auto review
+    name: Auto review 
     runs-on: ubuntu-latest
 
     steps:
@@ -29,17 +29,19 @@ jobs:
           path: |
             ~/.composer/cache
             ~/.cache/composer
+            vendor
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-          restore-keys: ${{ runner.os }}-composer-
+          restore-keys: |
+            ${{ runner.os }}-composer-
 
       - name: Install dependencies
-        run: composer update --no-progress --optimize-autoloader
+        run: composer install --no-progress --optimize-autoloader --prefer-dist --no-interaction
 
       - name: Run review
         run: composer review
 
   tests:
-    name: Tests
+    name: Tests 
     runs-on: ubuntu-latest
 
     steps:
@@ -57,11 +59,13 @@ jobs:
           path: |
             ~/.composer/cache
             ~/.cache/composer
+            vendor
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-          restore-keys: ${{ runner.os }}-composer-
+          restore-keys: |
+            ${{ runner.os }}-composer-
 
       - name: Install dependencies
-        run: composer update --no-progress --optimize-autoloader
+        run: composer install --no-progress --optimize-autoloader --prefer-dist --no-interaction
 
       - name: Run tests
         run: composer tests
