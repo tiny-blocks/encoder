@@ -11,7 +11,7 @@ env:
 
 jobs:
   auto-review:
-    name: Auto review (PHP ${{ env.PHP_VERSION }})
+    name: Auto review
     runs-on: ubuntu-latest
 
     steps:
@@ -23,7 +23,7 @@ jobs:
         with:
           php-version: ${{ env.PHP_VERSION }}
 
-      - name: Cache Composer
+      - name: Cache dependencies
         uses: actions/cache@v4
         with:
           path: |
@@ -39,7 +39,7 @@ jobs:
         run: composer review
 
   tests:
-    name: Tests (PHP ${{ env.PHP_VERSION }})
+    name: Tests
     runs-on: ubuntu-latest
 
     steps:
@@ -51,7 +51,7 @@ jobs:
         with:
           php-version: ${{ env.PHP_VERSION }}
 
-      - name: Cache Composer
+      - name: Cache dependencies
         uses: actions/cache@v4
         with:
           path: |
