@@ -11,7 +11,7 @@ env:
 
 jobs:
   auto-review:
-    name: Auto review 
+    name: Auto review
     runs-on: ubuntu-latest
 
     steps:
@@ -22,17 +22,6 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ env.PHP_VERSION }}
-
-      - name: Cache dependencies
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.composer/cache
-            ~/.cache/composer
-            vendor
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-composer-
 
       - name: Install dependencies
         run: composer install --no-progress --optimize-autoloader --prefer-dist --no-interaction
@@ -41,28 +30,17 @@ jobs:
         run: composer review
 
   tests:
-    name: Tests 
+    name: Tests
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
         uses: actions/checkout@v6
 
-      - name: Configure PHP
+      - name: Use PHP ${{ env.PHP_VERSION }}
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ env.PHP_VERSION }}
-
-      - name: Cache dependencies
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.composer/cache
-            ~/.cache/composer
-            vendor
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-composer-
 
       - name: Install dependencies
         run: composer install --no-progress --optimize-autoloader --prefer-dist --no-interaction
