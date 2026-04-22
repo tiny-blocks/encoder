@@ -6,11 +6,10 @@ namespace TinyBlocks\Encoder\Internal;
 
 final readonly class Hexadecimal
 {
-    private const int DEFAULT_BYTE_COUNT = 0;
-    private const int HEXADECIMAL_BYTE_LENGTH = 2;
-
     public const string HEXADECIMAL_RADIX = '16';
+    private const int DEFAULT_BYTE_COUNT = 0;
     public const string HEXADECIMAL_ALPHABET = '0123456789abcdef';
+    private const int HEXADECIMAL_BYTE_LENGTH = 2;
 
     private function __construct(
         private string $value,
@@ -29,6 +28,28 @@ final readonly class Hexadecimal
         return new Hexadecimal(value: bin2hex($binary), alphabet: $alphabet);
     }
 
+    public function bytes(): int
+    {
+        return $this->bytes;
+    }
+
+    public function isEmpty(): bool
+    {
+        return $this->value === '';
+    }
+
+    public function toString(): string
+    {
+        return $this->value;
+    }
+
+    public function fillWithZeroIfNecessary(): Hexadecimal
+    {
+        $newValue = strlen($this->value) % 2 !== 0 ? sprintf('0%s', $this->value) : $this->value;
+
+        return new Hexadecimal(value: $newValue, alphabet: $this->alphabet, bytes: $this->bytes);
+    }
+
     public function removeLeadingZeroBytes(): Hexadecimal
     {
         $value = $this->value;
@@ -45,47 +66,16 @@ final readonly class Hexadecimal
         return new Hexadecimal(value: $value, alphabet: $this->alphabet, bytes: $bytes);
     }
 
-    public function fillWithZeroIfNecessary(): Hexadecimal
-    {
-        $newValue = strlen($this->value) % 2 !== 0 ? sprintf('0%s', $this->value) : $this->value;
-
-        return new Hexadecimal(value: $newValue, alphabet: $this->alphabet, bytes: $this->bytes);
-    }
-
-    public function getBytes(): int
-    {
-        return $this->bytes;
-    }
-
-    public function isEmpty(): bool
-    {
-        return empty($this->value);
-    }
-
     public function toBase(string $base): string
     {
-        $decimalValue = '0';
+        $decimalValue = BaseConverter::toDecimal(
+            radix: self::HEXADECIMAL_RADIX,
+            number: $this->value,
+            alphabet: self::HEXADECIMAL_ALPHABET
+        );
 
-        foreach (str_split($this->value) as $character) {
-            $digit = (string)strpos(self::HEXADECIMAL_ALPHABET, $character);
-            $decimalValue = bcmul($decimalValue, self::HEXADECIMAL_RADIX);
-            $decimalValue = bcadd($decimalValue, $digit);
-        }
-
-        $digits = $this->alphabet;
-        $result = '';
-
-        while ($decimalValue !== '0') {
-            $remainder = intval(bcmod($decimalValue, $base));
-            $result = sprintf('%s%s', $digits[$remainder], $result);
-            $decimalValue = bcdiv($decimalValue, $base);
-        }
+        $result = BaseConverter::fromDecimal(radix: $base, alphabet: $this->alphabet, decimalValue: $decimalValue);
 
         return $result ?: '0';
-    }
-
-    public function toString(): string
-    {
-        return $this->value;
     }
 }
