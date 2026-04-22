@@ -34,6 +34,12 @@ specific formats like Base62.
 To encode a value into Base62 format:
 
 ```php
+<?php
+
+declare(strict_types=1);
+
+use TinyBlocks\Encoder\Base62;
+
 $encoder = Base62::from(value: 'Hello world!');
 $encoded = $encoder->encode();
 
@@ -43,6 +49,12 @@ $encoded = $encoder->encode();
 To decode a Base62-encoded value back to its original form:
 
 ```php
+<?php
+
+declare(strict_types=1);
+
+use TinyBlocks\Encoder\Base62;
+
 $encoder = Base62::from(value: 'T8dgcjRGuYUueWht');
 $decoded = $encoder->decode();
 
@@ -52,6 +64,13 @@ $decoded = $encoder->decode();
 If you attempt to decode an invalid Base62 value, an `InvalidDecoding` exception will be thrown:
 
 ```php
+<?php
+
+declare(strict_types=1);
+
+use TinyBlocks\Encoder\Base62;
+use TinyBlocks\Encoder\Internal\Exceptions\InvalidDecoding;
+
 try {
     $encoder = Base62::from(value: 'invalid_value');
     $decoded = $encoder->decode();

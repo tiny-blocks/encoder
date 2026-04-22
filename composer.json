@@ -1,34 +1,32 @@
 {
     "name": "tiny-blocks/encoder",
-    "type": "library",
-    "license": "MIT",
-    "homepage": "https://github.com/tiny-blocks/encoder",
     "description": "Encoder and decoder for arbitrary data.",
-    "prefer-stable": true,
-    "minimum-stability": "stable",
-    "keywords": [
-        "psr",
-        "base62",
-        "decoder",
-        "encoder",
-        "tiny-blocks"
-    ],
+    "license": "MIT",
+    "type": "library",
     "authors": [
         {
             "name": "Gustavo Freze de Araujo Santos",
             "homepage": "https://github.com/gustavofreze"
         }
     ],
+    "homepage": "https://github.com/tiny-blocks/encoder",
     "support": {
         "issues": "https://github.com/tiny-blocks/encoder/issues",
         "source": "https://github.com/tiny-blocks/encoder"
     },
-    "config": {
-        "sort-packages": true,
-        "allow-plugins": {
-            "infection/extension-installer": true
-        }
+    "require": {
+        "php": "^8.5",
+        "ext-bcmath": "*"
     },
+    "require-dev": {
+        "ergebnis/composer-normalize": "^2.51",
+        "infection/infection": "^0.32",
+        "phpstan/phpstan": "^2.1",
+        "phpunit/phpunit": "^13.1",
+        "squizlabs/php_codesniffer": "^4.0"
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
     "autoload": {
         "psr-4": {
             "TinyBlocks\\Encoder\\": "src/"
@@ -39,30 +37,24 @@
             "TinyBlocks\\Encoder\\": "tests/"
         }
     },
-    "require": {
-        "php": "^8.5",
-        "ext-bcmath": "*"
-    },
-    "require-dev": {
-        "phpunit/phpunit": "^11.5",
-        "phpstan/phpstan": "^1.12",
-        "infection/infection": "^0.32",
-        "squizlabs/php_codesniffer": "^3.13"
-    },
-    "suggest": {
-        "ext-bcmath": "Enables the extension which is an interface to the GNU implementation as a Basic Calculator utility library."
+    "config": {
+        "allow-plugins": {
+            "ergebnis/composer-normalize": true,
+            "infection/extension-installer": true
+        },
+        "sort-packages": true
     },
     "scripts": {
-        "test": "php -d memory_limit=2G ./vendor/bin/phpunit --configuration phpunit.xml tests",
+        "mutation-test": "php ./vendor/bin/infection --threads=max --logger-html=report/coverage/mutation-report.html --coverage=report/coverage",
         "phpcs": "php ./vendor/bin/phpcs --standard=PSR12 --extensions=php ./src",
         "phpstan": "php ./vendor/bin/phpstan analyse -c phpstan.neon.dist --quiet --no-progress",
-        "test-file": "php ./vendor/bin/phpunit --configuration phpunit.xml --no-coverage --filter",
-        "mutation-test": "php ./vendor/bin/infection --threads=max --logger-html=report/coverage/mutation-report.html --coverage=report/coverage",
-        "test-no-coverage": "php ./vendor/bin/phpunit --configuration phpunit.xml --no-coverage tests",
         "review": [
             "@phpcs",
             "@phpstan"
         ],
+        "test": "php -d memory_limit=2G ./vendor/bin/phpunit --configuration phpunit.xml tests",
+        "test-file": "php ./vendor/bin/phpunit --configuration phpunit.xml --no-coverage --filter",
+        "test-no-coverage": "php ./vendor/bin/phpunit --configuration phpunit.xml --no-coverage tests",
         "tests": [
             "@test",
             "@mutation-test"

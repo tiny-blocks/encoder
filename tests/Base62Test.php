@@ -10,87 +10,85 @@ use TinyBlocks\Encoder\Internal\Exceptions\InvalidDecoding;
 
 final class Base62Test extends TestCase
 {
-    #[DataProvider('providerForTestEncode')]
-    public function testEncode(string $value, string $expected): void
+    #[DataProvider('providerForEncoding')]
+    public function testWhenEncodingThenReturnsBase62Representation(string $value, string $expected): void
     {
-        /** @Given a string value to encode */
-        $encoder = Base62::from(value: $value);
+        /** @Given a raw string value */
+        $payload = $value;
 
-        /** @When encoding the value using Base62 */
-        $actual = $encoder->encode();
+        /** @When encoding the payload using Base62 */
+        $actual = Base62::from(value: $payload)->encode();
 
-        /** @Then the encoded value should match the expected result */
+        /** @Then the encoded representation matches the expected Base62 string */
         self::assertEquals($expected, $actual);
     }
 
-    #[DataProvider('providerForTestDecode')]
-    public function testDecode(string $value, string $expected): void
+    #[DataProvider('providerForDecoding')]
+    public function testWhenDecodingThenReturnsOriginalValue(string $value, string $expected): void
     {
         /** @Given a Base62 encoded string */
-        $encoder = Base62::from(value: $value);
+        $encoded = $value;
 
-        /** @When decoding the value using Base62 */
-        $actual = $encoder->decode();
+        /** @When decoding the encoded string using Base62 */
+        $actual = Base62::from(value: $encoded)->decode();
 
-        /** @Then the decoded value should match the expected result */
+        /** @Then the decoded value matches the original payload */
         self::assertEquals($expected, $actual);
     }
 
-    public function testWhenInvalidDecodingBase62(): void
+    #[DataProvider('providerForRoundTripWithAllZeroBytes')]
+    public function testWhenRoundTrippingAllZeroBytesThenReturnsOriginalPayload(string $value): void
     {
-        $value = hex2bin('9850EEEC191BF4FF26F99315CE43B0C8');
-        $template = 'The value <%s> could not be decoded.';
+        /** @Given a binary payload containing only zero bytes */
+        $payload = $value;
 
+        /** @When round-tripping the payload through encode and decode */
+        $decoded = Base62::from(value: Base62::from(value: $payload)->encode())->decode();
+
+        /** @Then the decoded payload matches the original binary payload */
+        self::assertEquals($payload, $decoded);
+    }
+
+    #[DataProvider('providerForRoundTripWithLeadingZeroBytes')]
+    public function testWhenRoundTrippingPayloadWithLeadingZeroBytesThenReturnsOriginalPayload(string $value): void
+    {
+        /** @Given a binary payload with leading zero bytes */
+        $payload = $value;
+
+        /** @When round-tripping the payload through encode and decode */
+        $decoded = Base62::from(value: Base62::from(value: $payload)->encode())->decode();
+
+        /** @Then the decoded payload matches the original binary payload */
+        self::assertEquals($payload, $decoded);
+    }
+
+    public function testWhenDecodingValueWithCharactersOutsideAlphabetThenInvalidDecodingIsThrown(): void
+    {
+        /** @Given a binary payload containing characters outside the Base62 alphabet */
+        $payload = hex2bin('9850EEEC191BF4FF26F99315CE43B0C8');
+
+        /** @Then an InvalidDecoding exception describing the payload should be thrown */
         $this->expectException(InvalidDecoding::class);
-        $this->expectExceptionMessage(sprintf($template, $value));
+        $this->expectExceptionMessage(sprintf('The value <%s> could not be decoded.', $payload));
 
-        Base62::from(value: $value)->decode();
+        /** @When attempting to decode the invalid payload */
+        Base62::from(value: $payload)->decode();
     }
 
-    #[DataProvider('providerForTestEncodeAndDecodeWithAllZeroBytes')]
-    public function testEncodeAndDecodeWithAllZeroBytes(string $value): void
+    public function testWhenDecodingValueWithBackslashThenInvalidDecodingIsThrown(): void
     {
-        /** @Given a binary value containing only zero bytes */
-        $encoder = Base62::from(value: $value);
+        /** @Given a payload containing a backslash that is not in the Base62 alphabet */
+        $payload = '\\A';
 
-        /** @When encoding the binary value */
-        $encoded = $encoder->encode();
-
-        /** @When decoding the encoded value */
-        $decoded = Base62::from(value: $encoded)->decode();
-
-        /** @Then the decoded value should match the original binary value */
-        self::assertEquals($value, $decoded);
-    }
-
-    public function testWhenInvalidDecodingBase62WhenHex2BinFails(): void
-    {
-        $value = '\\A';
-        $template = 'The value <%s> could not be decoded.';
-
+        /** @Then an InvalidDecoding exception describing the payload should be thrown */
         $this->expectException(InvalidDecoding::class);
-        $this->expectExceptionMessage(sprintf($template, $value));
+        $this->expectExceptionMessage(sprintf('The value <%s> could not be decoded.', $payload));
 
-        Base62::from(value: $value)->decode();
+        /** @When attempting to decode the invalid payload */
+        Base62::from(value: $payload)->decode();
     }
 
-    #[DataProvider('providerForTestEncodeAndDecodeWithLeadingZeroBytes')]
-    public function testEncodeAndDecodeWithLeadingZeroBytes(string $value): void
-    {
-        /** @Given a binary value with leading zero bytes */
-        $encoder = Base62::from(value: $value);
-
-        /** @When encoding the binary value */
-        $encoded = $encoder->encode();
-
-        /** @When decoding the encoded value */
-        $decoded = Base62::from(value: $encoded)->decode();
-
-        /** @Then the decoded value should match the original binary value */
-        self::assertEquals($value, $decoded);
-    }
-
-    public static function providerForTestEncode(): array
+    public static function providerForEncoding(): array
     {
         return [
             'Hello world'        => ['value' => 'Hello world!', 'expected' => 'T8dgcjRGuYUueWht'],
@@ -100,7 +98,7 @@ final class Base62Test extends TestCase
         ];
     }
 
-    public static function providerForTestDecode(): array
+    public static function providerForDecoding(): array
     {
         return [
             'Zero value'         => ['value' => '0', 'expected' => ''],
@@ -115,7 +113,7 @@ final class Base62Test extends TestCase
         ];
     }
 
-    public static function providerForTestEncodeAndDecodeWithAllZeroBytes(): array
+    public static function providerForRoundTripWithAllZeroBytes(): array
     {
         return [
             'Single zero byte' => ['value' => "\x00"],
@@ -124,7 +122,7 @@ final class Base62Test extends TestCase
         ];
     }
 
-    public static function providerForTestEncodeAndDecodeWithLeadingZeroBytes(): array
+    public static function providerForRoundTripWithLeadingZeroBytes(): array
     {
         return [
             'Leading zero bytes 01' => ['value' => '001jlt60MnKnB9ECKRt4gl'],
