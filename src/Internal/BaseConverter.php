@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 namespace TinyBlocks\Encoder\Internal;
 
-final readonly class BaseConverter
+final class BaseConverter
 {
+    private function __construct()
+    {
+    }
+
     public static function toDecimal(string $radix, string $number, string $alphabet): string
     {
         $decimalValue = '0';
@@ -21,14 +25,14 @@ final readonly class BaseConverter
 
     public static function fromDecimal(string $radix, string $alphabet, string $decimalValue): string
     {
-        $result = '';
+        $encoded = '';
 
         while ($decimalValue !== '0') {
             $remainder = intval(bcmod($decimalValue, $radix));
-            $result = sprintf('%s%s', $alphabet[$remainder], $result);
+            $encoded = sprintf('%s%s', $alphabet[$remainder], $encoded);
             $decimalValue = bcdiv($decimalValue, $radix);
         }
 
-        return $result;
+        return $encoded;
     }
 }

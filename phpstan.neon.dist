@@ -1,8 +1,16 @@
 parameters:
-  paths:
-    - src
-  level: 9
-  tmpDir: report/phpstan
-  ignoreErrors:
-    - '#numeric-string#'
-  reportUnmatchedIgnoredErrors: false
+    level: max
+    paths:
+        - src
+        - tests
+    reportUnmatchedIgnoredErrors: true
+    ignoreErrors:
+        # bcmath operates on numeric strings, which the native string type and the strpos cast do not express.
+        - identifier: argument.type
+          path: src/Internal/BaseConverter.php
+        # Data provider return shapes carry no value type, and tests take no descriptive PHPDoc.
+        - identifier: missingType.iterableValue
+          path: tests/Base62Test.php
+        # hex2bin returns string or false, narrowed to a valid string by the fixed hexadecimal fixtures.
+        - identifier: argument.type
+          path: tests/Base62Test.php

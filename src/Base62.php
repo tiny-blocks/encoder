@@ -4,42 +4,31 @@ declare(strict_types=1);
 
 namespace TinyBlocks\Encoder;
 
+use TinyBlocks\Encoder\Exceptions\InvalidDecoding;
 use TinyBlocks\Encoder\Internal\Decimal;
-use TinyBlocks\Encoder\Internal\Exceptions\InvalidDecoding;
 use TinyBlocks\Encoder\Internal\Hexadecimal;
 
+/**
+ * Base62 encoder and decoder backed by a fixed 62-character alphabet.
+ */
 final readonly class Base62 implements Encoder
 {
-    public const string BASE62_RADIX = '62';
+    private const string BASE62_RADIX = '62';
     private const string BASE62_ALPHABET = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
 
     private function __construct(private string $payload)
     {
     }
 
+    /**
+     * Creates a Base62 encoder for the given value.
+     *
+     * @param string $value The raw value to encode, or the Base62 string to decode.
+     * @return Encoder The Base62 encoder.
+     */
     public static function from(string $value): Encoder
     {
         return new Base62(payload: $value);
-    }
-
-    public function encode(): string
-    {
-        $hexadecimal = Hexadecimal::fromBinary(binary: $this->payload, alphabet: self::BASE62_ALPHABET);
-        $hexadecimal = $hexadecimal->removeLeadingZeroBytes();
-
-        $prefix = str_repeat(self::BASE62_ALPHABET[0], $hexadecimal->bytes());
-
-        if ($hexadecimal->isEmpty()) {
-            if ($hexadecimal->bytes() === 0) {
-                return '';
-            }
-
-            return sprintf('%s%s', $prefix, self::BASE62_ALPHABET[0]);
-        }
-
-        $base62Value = $hexadecimal->toBase(base: self::BASE62_RADIX);
-
-        return sprintf('%s%s', $prefix, $base62Value);
     }
 
     public function decode(): string
@@ -55,14 +44,11 @@ final readonly class Base62 implements Encoder
         $leadingZeroCharacters = strspn($this->payload, self::BASE62_ALPHABET[0]);
 
         if ($leadingZeroCharacters === strlen($this->payload)) {
-            return str_repeat("\x00", max(0, $leadingZeroCharacters - 1));
+            return str_repeat("\x00", $leadingZeroCharacters - 1);
         }
 
-        $leadingZeroByteCount = $leadingZeroCharacters;
-        $encodedDigits = ltrim($this->payload, self::BASE62_ALPHABET[0]);
-
         $decimal = Decimal::from(
-            number: $encodedDigits,
+            number: $this->payload,
             alphabet: self::BASE62_ALPHABET,
             baseRadix: self::BASE62_RADIX
         );
@@ -72,6 +58,18 @@ final readonly class Base62 implements Encoder
 
         $binary = hex2bin($hexadecimal);
 
-        return sprintf('%s%s', str_repeat("\x00", $leadingZeroByteCount), $binary);
+        return sprintf('%s%s', str_repeat("\x00", $leadingZeroCharacters), $binary);
+    }
+
+    public function encode(): string
+    {
+        if ($this->payload === '') {
+            return '';
+        }
+
+        $hexadecimal = Hexadecimal::fromBinary(binary: $this->payload, alphabet: self::BASE62_ALPHABET);
+        $prefix = str_repeat(self::BASE62_ALPHABET[0], $hexadecimal->leadingZeroBytes());
+
+        return sprintf('%s%s', $prefix, $hexadecimal->toBase(base: self::BASE62_RADIX));
     }
 }
