@@ -1,28 +1,23 @@
 # Encoder
 
-[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+[![License](https://img.shields.io/badge/license-MIT-green)](https://github.com/tiny-blocks/encoder/blob/main/LICENSE)
 
 * [Overview](#overview)
 * [Installation](#installation)
 * [How to use](#how-to-use)
+    + [Using Base62](#using-base62)
 * [License](#license)
 * [Contributing](#contributing)
-
-<div id='overview'></div> 
 
 ## Overview
 
 Encoder and decoder for arbitrary data.
-
-<div id='installation'></div>
 
 ## Installation
 
 ```bash
 composer require tiny-blocks/encoder
 ```
-
-<div id='how-to-use'></div>
 
 ## How to use
 
@@ -69,7 +64,7 @@ If you attempt to decode an invalid Base62 value, an `InvalidDecoding` exception
 declare(strict_types=1);
 
 use TinyBlocks\Encoder\Base62;
-use TinyBlocks\Encoder\Internal\Exceptions\InvalidDecoding;
+use TinyBlocks\Encoder\Exceptions\InvalidDecoding;
 
 try {
     $encoder = Base62::from(value: 'invalid_value');
@@ -80,13 +75,9 @@ try {
 }
 ```
 
-<div id='license'></div> 
-
 ## License
 
 Encoder is licensed under [MIT](LICENSE).
-
-<div id='contributing'></div>
 
 ## Contributing
 

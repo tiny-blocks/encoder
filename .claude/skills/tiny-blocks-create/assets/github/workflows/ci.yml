@@ -19,7 +19,7 @@ jobs:
       php-version: ${{ steps.config.outputs.php-version }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@v6
 
       - name: Resolve PHP version from composer.json
         id: config
@@ -34,13 +34,12 @@ jobs:
     timeout-minutes: 15
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@v6
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           tools: composer:2
-          extensions: bcmath
           php-version: ${{ needs.resolve-php-version.outputs.php-version }}
 
       - name: Validate composer.json
@@ -64,13 +63,12 @@ jobs:
     timeout-minutes: 15
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@v6
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           tools: composer:2
-          extensions: bcmath
           php-version: ${{ needs.resolve-php-version.outputs.php-version }}
 
       - name: Download vendor artifact from build
@@ -89,13 +87,12 @@ jobs:
     timeout-minutes: 15
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@v6
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           tools: composer:2
-          extensions: bcmath
           php-version: ${{ needs.resolve-php-version.outputs.php-version }}
 
       - name: Download vendor artifact from build

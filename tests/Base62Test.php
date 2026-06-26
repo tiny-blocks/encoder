@@ -2,27 +2,15 @@
 
 declare(strict_types=1);
 
-namespace TinyBlocks\Encoder;
+namespace Test\TinyBlocks\Encoder;
 
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use TinyBlocks\Encoder\Internal\Exceptions\InvalidDecoding;
+use TinyBlocks\Encoder\Base62;
+use TinyBlocks\Encoder\Exceptions\InvalidDecoding;
 
 final class Base62Test extends TestCase
 {
-    #[DataProvider('providerForEncoding')]
-    public function testWhenEncodingThenReturnsBase62Representation(string $value, string $expected): void
-    {
-        /** @Given a raw string value */
-        $payload = $value;
-
-        /** @When encoding the payload using Base62 */
-        $actual = Base62::from(value: $payload)->encode();
-
-        /** @Then the encoded representation matches the expected Base62 string */
-        self::assertEquals($expected, $actual);
-    }
-
     #[DataProvider('providerForDecoding')]
     public function testWhenDecodingThenReturnsOriginalValue(string $value, string $expected): void
     {
@@ -33,6 +21,19 @@ final class Base62Test extends TestCase
         $actual = Base62::from(value: $encoded)->decode();
 
         /** @Then the decoded value matches the original payload */
+        self::assertEquals($expected, $actual);
+    }
+
+    #[DataProvider('providerForEncoding')]
+    public function testWhenEncodingThenReturnsBase62Representation(string $value, string $expected): void
+    {
+        /** @Given a raw string value */
+        $payload = $value;
+
+        /** @When encoding the payload using Base62 */
+        $actual = Base62::from(value: $payload)->encode();
+
+        /** @Then the encoded representation matches the expected Base62 string */
         self::assertEquals($expected, $actual);
     }
 
@@ -47,6 +48,19 @@ final class Base62Test extends TestCase
 
         /** @Then the decoded payload matches the original binary payload */
         self::assertEquals($payload, $decoded);
+    }
+
+    public function testWhenDecodingValueWithBackslashThenInvalidDecodingIsThrown(): void
+    {
+        /** @Given a payload containing a backslash that is not in the Base62 alphabet */
+        $payload = '\\A';
+
+        /** @Then an InvalidDecoding exception describing the payload should be thrown */
+        $this->expectException(InvalidDecoding::class);
+        $this->expectExceptionMessage(sprintf('The value <%s> could not be decoded.', $payload));
+
+        /** @When attempting to decode the invalid payload */
+        Base62::from(value: $payload)->decode();
     }
 
     #[DataProvider('providerForRoundTripWithLeadingZeroBytes')]
@@ -75,29 +89,6 @@ final class Base62Test extends TestCase
         Base62::from(value: $payload)->decode();
     }
 
-    public function testWhenDecodingValueWithBackslashThenInvalidDecodingIsThrown(): void
-    {
-        /** @Given a payload containing a backslash that is not in the Base62 alphabet */
-        $payload = '\\A';
-
-        /** @Then an InvalidDecoding exception describing the payload should be thrown */
-        $this->expectException(InvalidDecoding::class);
-        $this->expectExceptionMessage(sprintf('The value <%s> could not be decoded.', $payload));
-
-        /** @When attempting to decode the invalid payload */
-        Base62::from(value: $payload)->decode();
-    }
-
-    public static function providerForEncoding(): array
-    {
-        return [
-            'Hello world'        => ['value' => 'Hello world!', 'expected' => 'T8dgcjRGuYUueWht'],
-            'Empty string'       => ['value' => '', 'expected' => ''],
-            'Numeric string'     => ['value' => '1234567890', 'expected' => '1A0afZkibIAR2O'],
-            'Special characters' => ['value' => '@#$%^&*()', 'expected' => 'MjehbVgJedVR']
-        ];
-    }
-
     public static function providerForDecoding(): array
     {
         return [
@@ -110,6 +101,16 @@ final class Base62Test extends TestCase
             'Single zero byte'   => ['value' => '00', 'expected' => "\x00"],
             'Single character'   => ['value' => '1', 'expected' => "\001"],
             'Special characters' => ['value' => 'MjehbVgJedVR', 'expected' => '@#$%^&*()']
+        ];
+    }
+
+    public static function providerForEncoding(): array
+    {
+        return [
+            'Hello world'        => ['value' => 'Hello world!', 'expected' => 'T8dgcjRGuYUueWht'],
+            'Empty string'       => ['value' => '', 'expected' => ''],
+            'Numeric string'     => ['value' => '1234567890', 'expected' => '1A0afZkibIAR2O'],
+            'Special characters' => ['value' => '@#$%^&*()', 'expected' => 'MjehbVgJedVR']
         ];
     }
 

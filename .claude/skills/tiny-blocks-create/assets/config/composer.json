@@ -1,13 +1,12 @@
 {
-    "name": "tiny-blocks/encoder",
-    "description": "Encoder and decoder for arbitrary data.",
+    "name": "tiny-blocks/<lib-name>",
+    "description": "<one short sentence describing what the library does>",
     "license": "MIT",
     "type": "library",
     "keywords": [
-        "base62",
-        "encoder",
-        "decoder",
-        "tiny-blocks"
+        "tiny-blocks",
+        "<topic-1>",
+        "<topic-2>"
     ],
     "authors": [
         {
@@ -15,14 +14,13 @@
             "homepage": "https://github.com/gustavofreze"
         }
     ],
-    "homepage": "https://github.com/tiny-blocks/encoder",
+    "homepage": "https://github.com/tiny-blocks/<lib-name>",
     "support": {
-        "issues": "https://github.com/tiny-blocks/encoder/issues",
-        "source": "https://github.com/tiny-blocks/encoder"
+        "issues": "https://github.com/tiny-blocks/<lib-name>/issues",
+        "source": "https://github.com/tiny-blocks/<lib-name>"
     },
     "require": {
-        "php": "^8.5",
-        "ext-bcmath": "*"
+        "php": "^8.5"
     },
     "require-dev": {
         "ergebnis/composer-normalize": "^2.52",
@@ -35,12 +33,12 @@
     "prefer-stable": true,
     "autoload": {
         "psr-4": {
-            "TinyBlocks\\Encoder\\": "src/"
+            "TinyBlocks\\<LibName>\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Test\\TinyBlocks\\Encoder\\": "tests/"
+            "Test\\TinyBlocks\\<LibName>\\": "tests/"
         }
     },
     "config": {
