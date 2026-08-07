@@ -45,14 +45,14 @@ final readonly class Hexadecimal
     public function leadingZeroBytes(): int
     {
         $leadingZeroCharacters = strspn($this->value, '0');
-        $offset = $leadingZeroCharacters - ($leadingZeroCharacters % self::HEXADECIMAL_BYTE_LENGTH);
+        $offset = ($leadingZeroCharacters - ($leadingZeroCharacters % self::HEXADECIMAL_BYTE_LENGTH));
 
         return intdiv($offset, self::HEXADECIMAL_BYTE_LENGTH);
     }
 
     public function fillWithZeroIfNecessary(): Hexadecimal
     {
-        $newValue = strlen($this->value) % 2 !== 0 ? sprintf('0%s', $this->value) : $this->value;
+        $newValue = (strlen($this->value) % 2) !== 0 ? sprintf('0%s', $this->value) : $this->value;
 
         return new Hexadecimal(value: $newValue, alphabet: $this->alphabet);
     }

@@ -44,7 +44,7 @@ final readonly class Base62 implements Encoder
         $leadingZeroCharacters = strspn($this->payload, self::BASE62_ALPHABET[0]);
 
         if ($leadingZeroCharacters === strlen($this->payload)) {
-            return str_repeat("\x00", $leadingZeroCharacters - 1);
+            return str_repeat("\x00", ($leadingZeroCharacters - 1));
         }
 
         $decimal = Decimal::from(
