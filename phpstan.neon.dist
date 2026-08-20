@@ -3,7 +3,7 @@ parameters:
     paths:
         - src
         - tests
-    reportUnmatchedIgnoredErrors: true
+    tmpDir: reports/phpstan
     ignoreErrors:
         # bcmath operates on numeric strings, which the native string type and the strpos cast do not express.
         - identifier: argument.type
@@ -14,3 +14,4 @@ parameters:
         # hex2bin returns string or false, narrowed to a valid string by the fixed hexadecimal fixtures.
         - identifier: argument.type
           path: tests/Base62Test.php
+    reportUnmatchedIgnoredErrors: true
