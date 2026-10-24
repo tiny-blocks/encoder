@@ -11,7 +11,9 @@
 
 ## Overview
 
-Encoder and decoder for arbitrary data.
+Encodes and decodes arbitrary strings to and from Base62, the alphabet of digits and lower and upper case letters,
+which keeps the encoded value compact and safe in a URL. It backs the identifiers of
+[ksuid](https://github.com/tiny-blocks/ksuid).
 
 ## Installation
 
