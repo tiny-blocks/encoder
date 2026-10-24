@@ -1,6 +1,6 @@
 {
     "name": "tiny-blocks/encoder",
-    "description": "Encoder and decoder for arbitrary data.",
+    "description": "Encodes and decodes arbitrary strings to and from Base62 for PHP.",
     "license": "MIT",
     "type": "library",
     "keywords": [
